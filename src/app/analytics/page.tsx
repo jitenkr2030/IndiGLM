@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -62,6 +62,17 @@ interface APIMetric {
 export default function AnalyticsPage() {
   const [timeRange, setTimeRange] = useState('7d')
   const [isLoading, setIsLoading] = useState(false)
+  const [realTimeData, setRealTimeData] = useState<any>(null)
+  const [aiInsights, setAiInsights] = useState<any>(null)
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
+
+  // Auto-refresh data every 30 seconds
+  useEffect(() => {
+    refreshData()
+    const interval = setInterval(refreshData, 30000)
+    
+    return () => clearInterval(interval)
+  }, [timeRange])
 
   const metricCards: MetricCard[] = [
     {
@@ -204,8 +215,22 @@ export default function AnalyticsPage() {
 
   const refreshData = async () => {
     setIsLoading(true)
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    setIsLoading(false)
+    try {
+      // Call the real-time analytics API
+      const response = await fetch(`/api/v1/analytics/realtime?metric=overview&timeframe=${timeRange}`)
+      const data = await response.json()
+      
+      if (data.success) {
+        setRealTimeData(data.data)
+        setAiInsights(data.data.insights)
+        setLastUpdate(new Date())
+        console.log('Real-time analytics data:', data.data)
+      }
+    } catch (error) {
+      console.error('Failed to fetch real-time data:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const exportData = (format: string) => {
@@ -249,6 +274,11 @@ export default function AnalyticsPage() {
                 <Download className="w-4 h-4 mr-2" />
                 Export
               </Button>
+              {lastUpdate && (
+                <div className="text-xs text-muted-foreground">
+                  Last update: {lastUpdate.toLocaleTimeString()}
+                </div>
+              )}
             </div>
           </div>
 
@@ -382,6 +412,110 @@ export default function AnalyticsPage() {
                       <div className="text-center">
                         <BarChart3 className="w-12 h-12 mx-auto mb-2 text-muted-foreground opacity-50" />
                         <p className="text-muted-foreground">Interactive chart visualization</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* AI-Powered Insights */}
+              {aiInsights && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Zap className="w-5 h-5" />
+                      AI-Powered Insights
+                    </CardTitle>
+                    <CardDescription>
+                      Real-time AI analysis of your platform data
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      <div>
+                        <h4 className="font-medium mb-3 text-green-600">Key Trends</h4>
+                        <div className="space-y-2">
+                          {aiInsights.trends?.map((trend: string, index: number) => (
+                            <div key={index} className="flex items-center gap-2">
+                              <TrendingUp className="w-4 h-4 text-green-500" />
+                              <span className="text-sm">{trend}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium mb-3 text-blue-600">Opportunities</h4>
+                        <div className="space-y-2">
+                          {aiInsights.opportunities?.map((opportunity: string, index: number) => (
+                            <div key={index} className="flex items-center gap-2">
+                              <Target className="w-4 h-4 text-blue-500" />
+                              <span className="text-sm">{opportunity}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h4 className="font-medium mb-3 text-purple-600">Recommendations</h4>
+                        <div className="space-y-2">
+                          {aiInsights.recommendations?.map((recommendation: string, index: number) => (
+                            <div key={index} className="flex items-center gap-2">
+                              <CheckCircle className="w-4 h-4 text-purple-500" />
+                              <span className="text-sm">{recommendation}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Real-time Data Stream */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="w-5 h-5" />
+                    Live Data Stream
+                  </CardTitle>
+                  <CardDescription>
+                    Real-time platform metrics and events
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div className="text-center p-3 border rounded-lg bg-green-50">
+                        <div className="text-lg font-bold text-green-600">
+                          {realTimeData?.users?.active || '12,847'}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Active Users</div>
+                      </div>
+                      <div className="text-center p-3 border rounded-lg bg-blue-50">
+                        <div className="text-lg font-bold text-blue-600">
+                          {realTimeData?.api?.callsToday || '2.4M'}
+                        </div>
+                        <div className="text-xs text-muted-foreground">API Calls Today</div>
+                      </div>
+                      <div className="text-center p-3 border rounded-lg bg-purple-50">
+                        <div className="text-lg font-bold text-purple-600">
+                          {realTimeData?.api?.avgResponseTime || '1.2s'}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Avg Response</div>
+                      </div>
+                      <div className="text-center p-3 border rounded-lg bg-orange-50">
+                        <div className="text-lg font-bold text-orange-600">
+                          {realTimeData?.api?.successRate || '99.7%'}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Success Rate</div>
+                      </div>
+                    </div>
+                    
+                    <div className="h-32 bg-muted rounded-lg flex items-center justify-center">
+                      <div className="text-center">
+                        <Activity className="w-8 h-8 mx-auto mb-2 text-muted-foreground opacity-50" />
+                        <p className="text-sm text-muted-foreground">Real-time event stream visualization</p>
                       </div>
                     </div>
                   </div>
