@@ -1,0 +1,70 @@
+# Core dependencies
+requests>=2.31.0
+python-dateutil>=2.8.2
+pydantic>=2.0.0
+typing-extensions>=4.5.0
+
+# Web framework (for server)
+fastapi>=0.100.0
+uvicorn[standard]>=0.23.0
+python-multipart>=0.0.6
+
+# Async support
+aiohttp>=3.8.0
+asyncio-throttle>=1.0.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Language processing
+regex>=2023.6.3
+unicodedata2>=15.0.0
+
+# CLI enhancements
+click>=8.1.0
+rich>=13.0.0
+readline>=6.3.0
+
+# Configuration
+python-dotenv>=1.0.0
+PyYAML>=6.0
+
+# Logging and monitoring
+structlog>=23.0.0
+prometheus-client>=0.17.0
+
+# Testing and development
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.0.0
+
+# Optional dependencies for enhanced features
+# Image generation
+Pillow>=9.0.0
+
+# Web search
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+
+# Database (for caching/session management)
+sqlalchemy>=2.0.0
+alembic>=1.11.0
+
+# Authentication
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+
+# Rate limiting
+slowapi>=0.1.8
+
+# Documentation
+mkdocs>=1.4.0
+mkdocs-material>=9.0.0
+
+# Development tools
+pre-commit>=3.0.0
+isort>=5.12.0
+bandit>=1.7.0
