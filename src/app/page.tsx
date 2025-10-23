@@ -70,7 +70,7 @@ export default function Home() {
                     <Link href="/file-processing" className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-muted">
                       File Processing
                     </Link>
-                    <Link href="/functions" className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-muted">
+                    <Link href="/function-calling" className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-muted">
                       Function Calling
                     </Link>
                     <Link href="/code-tools" className="block px-4 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-muted">
